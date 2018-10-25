@@ -31,7 +31,15 @@ app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
 app.layout = html.Div(children=[
     html.H4(children='dbNSFP'),
-    generate_table(df)
+    dcc.Dropdown(
+        options=[
+            {'label': 'New York City', 'value': 'NYC'},
+            {'label': u'Montréal', 'value': 'MTL'},
+            {'label': 'San Francisco', 'value': 'SF'}
+        ],
+        value='MTL'
+    ),
+    generate_table(df),
 ])
 
 if __name__ == '__main__':
