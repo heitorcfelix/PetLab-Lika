@@ -2,45 +2,47 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 import pandas as pd
-import pandas as pd
+import os
+from dash.dependencies import Input, Output
 
-FILENAME = "dbNSFP3.5a_variant.chrM"
+dbNSFP_DIRECTORY = "/bioinfo/dbNSFPv3.5a/"
 COLUMN_NAMES = [""]
 pd.set_option('display.max_columns', 300)
 
-df = pd.read_csv("/bioinfo/dbNSFPv3.5a/" + FILENAME, sep='\t')
 #df = df[COLUMN_NAMES]
 
-df = df.head()
-
-def generate_table(dataframe):
+def generate_table(filename):
+    df = pd.read_csv("/bioinfo/dbNSFPv3.5a/" + filename, sep='\t')
+    df = df.head()
     return html.Table(
         # Header
-        [html.Tr([html.Th(col) for col in dataframe.columns])] +
+        [html.Tr([html.Th(col) for col in df.columns])] +
 
         # Body
         [html.Tr([
-            html.Td(dataframe.iloc[i][col]) for col in dataframe.columns
-        ]) for i in range(len(dataframe))]
+            html.Td(df.iloc[i][col]) for col in df.columns
+        ]) for i in range(len(df))]
     )
 
-
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+
+dropdown = [{"label": dbNSFP_file, "value": dbNSFP_file} for dbNSFP_file in os.listdir(dbNSFP_DIRECTORY) if "dbNSFP3.5a_variant.chr" in dbNSFP_file]
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
 app.layout = html.Div(children=[
     html.H4(children='dbNSFP'),
     dcc.Dropdown(
-        options=[
-            {'label': 'New York City', 'value': 'NYC'},
-            {'label': u'Montréal', 'value': 'MTL'},
-            {'label': 'San Francisco', 'value': 'SF'}
-        ],
-        value='MTL'
+        options= sorted(dropdown, key=lambda k: k['label']),
+        value='dbNSFP3.5a_variant.chrM',
+	id='my-dropdown'
     ),
-    generate_table(df),
+    html.Div(id='table-container')
 ])
+
+@app.callback(Output('table-container', 'children'), [Input('my-dropdown', 'value')])
+def update_table(value):
+    return generate_table(value)
 
 if __name__ == '__main__':
     app.run_server(debug=True)
