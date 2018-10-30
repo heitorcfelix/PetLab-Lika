@@ -4,16 +4,24 @@ import dash_html_components as html
 import pandas as pd
 import os
 from dash.dependencies import Input, Output
+from time import sleep
 
 dbNSFP_DIRECTORY = "/bioinfo/dbNSFPv3.5a/"
 COLUMN_NAMES = [""]
 pd.set_option('display.max_columns', 300)
 
+df1 = pd.read_csv("/bioinfo/dbNSFPv3.5a/" + "dbNSFP3.5a_variant.chrM", sep='\t')
+#df1 = df1.head()
+df2 = pd.read_csv("/bioinfo/dbNSFPv3.5a/" + "dbNSFP3.5a_variant.chrY", sep='\t')
+df2 = df2.head()
+
 #df = df[COLUMN_NAMES]
 
 def generate_table(filename):
-    df = pd.read_csv("/bioinfo/dbNSFPv3.5a/" + filename, sep='\t')
-    df = df.head()
+    if(filename == "dbNSFP3.5a_variant.chrM"):
+        df = df1
+    else:
+        df = df2
     return html.Table(
         # Header
         [html.Tr([html.Th(col) for col in df.columns])] +
