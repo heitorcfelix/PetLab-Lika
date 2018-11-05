@@ -5,7 +5,6 @@ import dash_table_experiments as dt
 import pandas as pd
 import os
 from dash.dependencies import Input, Output
-from time import sleep
 
 dbNSFP_DIRECTORY = "/bioinfo/dbNSFPv3.5a/"
 COLUMN_NAMES = ["genename", "rs_dbSNP150", "hg19_pos(1-based)", "cds_strand", "codonpos", "codon_degeneracy",
