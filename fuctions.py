@@ -34,17 +34,17 @@ def get_column_information_rate(dataframe):
     
     return pd.DataFrame.from_dict(info_dict)
 
-def parallelize_dataframe(df, func, num_partitions, num_cores):
+def parallelize_information_rate(df, num_partitions, num_cores):
     df_split = np.array_split(df, num_partitions)
     pool = Pool(num_cores)
-    df = pd.concat(pool.map(func, df_split))
+    df = pd.concat(pool.map(get_column_information_rate, df_split))
     pool.close()
     pool.join()
     return df.mean()
 
-def parallelize_dataframe_2(file_names, func, num_cores):
+def parallelize_read_csv(file_names, num_cores):
     pool = Pool(num_cores)
-    df = pd.concat(pool.map(func, file_names))
+    df = pd.concat(pool.map(read_csv, file_names))
     pool.close()
     pool.join()
     return df
