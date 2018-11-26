@@ -50,4 +50,21 @@ def main(file_dir, file_name):
     update_df = explode_cells(mutation_taster_df, non_problem_columns, mutation_taster_columns)
     update_df.to_csv('teste.csv')
 
-main('data/filter_rs/', 'dbNSFP3.5a_variant.chrM.csv')
+
+def filter_columns(original_df, columns):
+    df = original_df[columns]
+    return df
+
+def main2(file_dir, file_name, filter_col_dir):
+    original_df = pd.read_csv(file_dir + file_name)
+
+    columns = []
+
+    new_df = filter_columns(original_df, columns)
+
+    new_df.to_csv(filter_col_dir + file_name)
+
+
+#main('data/filter_rs/', 'dbNSFP3.5a_variant.chrM.csv')
+
+main2('data/filter_rs/', 'dbNSFP3.5a_variant.chrM.csv', 'data/filter_columns/')
