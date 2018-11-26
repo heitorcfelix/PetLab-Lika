@@ -1,4 +1,5 @@
 import pandas as pd
+import sys
 import numpy as np
 
 def divide_cells(row, rows, problem_columns, non_problem_columns, columns):
@@ -67,4 +68,11 @@ def main2(file_dir, file_name, filter_col_dir):
 
 #main('data/filter_rs/', 'dbNSFP3.5a_variant.chrM.csv')
 
-main2('/bioinfo/dbNSFPv3.5a_data/filter_rs/', 'dbNSFP3.5a_variant.chr1.csv', '/bioinfo/dbNSFPv3.5a_data/filter_columns/')
+#main2('/bioinfo/dbNSFPv3.5a_data/filter_rs/', 'dbNSFP3.5a_variant.chr1.csv', '/bioinfo/dbNSFPv3.5a_data/filter_columns/')
+
+if __name__ == "__main__":
+	if len(sys.argv) < 4:
+		print("ERROR: Missing parameters")
+		print("USAGE: python3 py_code.py dbNSFP_DIRECTORY dbNSFP_FILENAME filter_columns_DIRECTORY")
+	else:
+		main2(sys.argv[1],sys.argv[2],sys.argv[3])
