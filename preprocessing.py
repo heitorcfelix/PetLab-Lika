@@ -7,10 +7,13 @@ def divide_cells(row, rows, columns, problem_columns):
     
     list_problem_col = list(problem_columns)
     size = 1
+    max_col = ""
     for col in list_problem_col:
         if isinstance(row[col], list):
             curr_size = len(row[col])
-            size = curr_size if curr_size > size else size
+            if curr_size > size:
+                size = curr_size
+                max_col = col
 
     for i in range(size):
         new_row = []
@@ -21,7 +24,9 @@ def divide_cells(row, rows, columns, problem_columns):
                 elif len(row[column]) == 1:
                     new_row.append(row[column][0])
                 else:
-                    print("coluna ", column, " tem tamanho ", len(row[column]), " e o size máximo é ", size)
+                    print("coluna ", column, " tem tamanho ", 
+                        len(row[column]), " e o size máximo é ", 
+                        size, "da coluna ", max_col)
             else:
                 new_row.append(row[column])
         rows.append(new_row)
