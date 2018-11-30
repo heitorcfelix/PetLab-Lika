@@ -6,18 +6,22 @@ import re
 def divide_cells(row, rows, columns):
     size = 1
     for col in columns:
-        curr_size = len(row[col])
-        size = curr_size if curr_size > size else size
+        if isinstance(row[col], list):
+            curr_size = len(row[col])
+            size = curr_size if curr_size > size else size
 
     for i in range(size):
         new_row = []
         for column in columns:
-            if len(row[column]) == size:
-                new_row.append(row[column][i])
-            elif len(row[column]) == 1:
-                new_row.append(row[column][0])
+            if isinstance(row[column], list):
+                if len(row[column]) == size:
+                    new_row.append(row[column][i])
+                elif len(row[column]) == 1:
+                    new_row.append(row[column][0])
+                else:
+                    print("coluna ", column, " tem tamanho ", len(row[column]), " e o size máximo é ", size)
             else:
-                print("coluna ", column, " tem tamanho ", len(row[column]), " e o size máximo é ", size)
+                new_row.append(row[column])
         rows.append(new_row)
 
 def explode_cells(df, columns):
@@ -26,7 +30,8 @@ def explode_cells(df, columns):
     df_aux = df.copy()
 
     for column in columns:
-        df_aux[column] = df[column].str.split(pat=';')
+        if df_aux[column].dtype == object:
+            df_aux[column] = df[column].str.split(pat=';')
 
     rows = []
     df_aux.apply(lambda row: divide_cells(row, rows, columns), axis=1)
@@ -139,22 +144,22 @@ def main(file_dir, file_name, fixed_dir):
     fold_name = re.match(r'.*\.(chr[MYX0-9]*)\.csv',file_name).groups()[0]
 
     update_df = explode_cells(table1_df, columns_table1)
-    update_df.to_csv(fixed_dir + fold_name + "/" + fold_name+"1")
+    update_df.to_csv(fixed_dir + fold_name + "/" + fold_name+"1.csv")
 
     update_df = explode_cells(table2_df, columns_table2)
-    update_df.to_csv(fixed_dir + fold_name + "/" + fold_name+"2")
+    update_df.to_csv(fixed_dir + fold_name + "/" + fold_name+"2.csv")
 
     update_df = explode_cells(table3_df, columns_table3)
-    update_df.to_csv(fixed_dir + fold_name + "/" + fold_name+"3")
+    update_df.to_csv(fixed_dir + fold_name + "/" + fold_name+"3.csv")
 
     update_df = explode_cells(table4_df, columns_table4)
-    update_df.to_csv(fixed_dir + fold_name + "/" + fold_name+"4")
+    update_df.to_csv(fixed_dir + fold_name + "/" + fold_name+"4.csv")
 
     update_df = explode_cells(table5_df, columns_table5)
-    update_df.to_csv(fixed_dir + fold_name + "/" + fold_name+"5")
+    update_df.to_csv(fixed_dir + fold_name + "/" + fold_name+"5.csv")
 
-    table6_df.to_csv(fixed_dir + fold_name + "/" + fold_name+"6")
-    table7_df.to_csv(fixed_dir + fold_name + "/" + fold_name+"7")
+    table6_df.to_csv(fixed_dir + fold_name + "/" + fold_name+"6.csv")
+    table7_df.to_csv(fixed_dir + fold_name + "/" + fold_name+"7.csv")
 
 
 
