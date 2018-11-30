@@ -3,9 +3,11 @@ import sys
 import numpy as np
 import re
 
-def divide_cells(row, rows, columns):
+def divide_cells(row, rows, columns, problem_columns):
+    
+    list_problem_col = list(problem_columns)
     size = 1
-    for col in columns:
+    for col in list_problem_col:
         if isinstance(row[col], list):
             curr_size = len(row[col])
             size = curr_size if curr_size > size else size
@@ -13,7 +15,7 @@ def divide_cells(row, rows, columns):
     for i in range(size):
         new_row = []
         for column in columns:
-            if isinstance(row[column], list):
+            if column in problem_columns:
                 if len(row[column]) == size:
                     new_row.append(row[column][i])
                 elif len(row[column]) == 1:
@@ -24,17 +26,20 @@ def divide_cells(row, rows, columns):
                 new_row.append(row[column])
         rows.append(new_row)
 
-def explode_cells(df, columns):
+def explode_cells(df, columns, problem_columns):
     #problem_columns = set({})
 
     df_aux = df.copy()
 
-    for column in columns:
-        if df_aux[column].dtype == object:
+    list_problem_col = list(problem_columns)
+    for column in list_problem_col:
+        if df[column].dtype != object:
+            problem_columns.remove(column)
+        else:
             df_aux[column] = df[column].str.split(pat=';')
 
     rows = []
-    df_aux.apply(lambda row: divide_cells(row, rows, columns), axis=1)
+    df_aux.apply(lambda row: divide_cells(row, rows, columns, problem_columns), axis=1)
 
     return pd.DataFrame(rows, columns=columns)
 
@@ -67,11 +72,15 @@ def main(file_dir, file_name, fixed_dir):
     columns_table2 = ['rs_dbSNP150', 'genename', 'Ensembl_transcriptid', 
                     'MutationTaster_score', 'MutationTaster_converted_rankscore', 
                     'MutationTaster_pred']
+    problem_columns_table2 = {'Ensembl_transcriptid', 'MutationTaster_score', 
+                            'MutationTaster_pred'}
     
     columns_table3 = ['rs_dbSNP150', 'genename', 'Ensembl_proteinid', 'aapos', 
                     'SIFT_score', 'SIFT_converted_rankscore', 'SIFT_pred', 
                     'FATHMM_score', 'FATHMM_converted_rankscore', 'FATHMM_pred', 
                     'PROVEAN_score', 'PROVEAN_converted_rankscore', 'PROVEAN_pred']
+    problem_columns_table3 = {'Ensembl_proteinid', 'aapos', 'SIFT_score', 'SIFT_pred', 
+                            'FATHMM_score', 'FATHMM_pred', 'PROVEAN_score', 'PROVEAN_pred'}
     
     columns_table4 = ['rs_dbSNP150', 'genename', 'Uniprot_acc_Polyphen2', 
                     'Polyphen2_HDIV_score', 'Polyphen2_HDIV_rankscore', 
@@ -80,6 +89,7 @@ def main(file_dir, file_name, fixed_dir):
     
     columns_table5 = ['rs_dbSNP150', 'genename', 'Transcript_id_VEST3', 
                     'VEST3_score', 'VEST3_rankscore']
+    problem_columns_table5 = {'Transcript_id_VEST3', 'VEST3_score'}
     
     columns_table6 = ['rs_dbSNP150', 'genename', 'integrated_fitCons_score', 
                     'integrated_fitCons_score_rankscore', 'GM12878_fitCons_score', 
@@ -143,19 +153,21 @@ def main(file_dir, file_name, fixed_dir):
     
     fold_name = re.match(r'.*\.(chr[MYX0-9]*)\.csv',file_name).groups()[0]
 
-    update_df = explode_cells(table1_df, columns_table1)
-    update_df.to_csv(fixed_dir + fold_name + "/" + fold_name+"1.csv")
+    #update_df = explode_cells(table1_df, columns_table1)
+    #update_df.to_csv(fixed_dir + fold_name + "/" + fold_name+"1.csv")
+    table1_df.to_csv(fixed_dir + fold_name + "/" + fold_name+"1.csv")
 
-    update_df = explode_cells(table2_df, columns_table2)
+    update_df = explode_cells(table2_df, columns_table2, problem_columns_table2)
     update_df.to_csv(fixed_dir + fold_name + "/" + fold_name+"2.csv")
 
-    update_df = explode_cells(table3_df, columns_table3)
+    update_df = explode_cells(table3_df, columns_table3, problem_columns_table3)
     update_df.to_csv(fixed_dir + fold_name + "/" + fold_name+"3.csv")
 
-    update_df = explode_cells(table4_df, columns_table4)
-    update_df.to_csv(fixed_dir + fold_name + "/" + fold_name+"4.csv")
+    # update_df = explode_cells(table4_df, columns_table4)
+    # update_df.to_csv(fixed_dir + fold_name + "/" + fold_name+"4.csv")
+    table4_df.to_csv(fixed_dir + fold_name + "/" + fold_name+"4.csv")
 
-    update_df = explode_cells(table5_df, columns_table5)
+    update_df = explode_cells(table5_df, columns_table5, problem_columns_table5)
     update_df.to_csv(fixed_dir + fold_name + "/" + fold_name+"5.csv")
 
     table6_df.to_csv(fixed_dir + fold_name + "/" + fold_name+"6.csv")
